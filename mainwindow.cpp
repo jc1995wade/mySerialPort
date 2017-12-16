@@ -1,35 +1,23 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "qDebug"
+#include <QComboBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    btnOpen = new QPushButton("open", this);
-    btnOpen->setGeometry(50, 50, 80, 40);
-    //btnOpen->setFont(f);
-
-   btnClose = new QPushButton("close", this);
-   btnClose->setGeometry(50, 150, 80, 40);
-    //btnClose->setFont(f);
-
-   btnSendData = new QPushButton("send", this);
-   btnSendData->setGeometry(50, 330, 80, 40);
-
     m_spcomm = new SPCcom();
 
-    // 绑定串口接收函数和文本显示函数
+
+     // 设置端口号
+     ui->cb_COM->addItem(m_spcomm->m_listcomboName.join(","));
+
+     // 绑定串口接收函数和文本显示函数
     connect(m_spcomm, SIGNAL(send(QByteArray)), this, SLOT(recv(QByteArray)));
-
-    connect(btnOpen,  SIGNAL(clicked(bool)), this,  SLOT(btnOpen_clicked()));
-    connect(btnClose,  SIGNAL(clicked(bool)),  this,  SLOT(btnClose_clicked()));
-    connect(btnSendData,  SIGNAL(clicked(bool)),  this,  SLOT(btnSendData_clicked()));
-    ui->textRData->setText("12456");
-
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -45,8 +33,8 @@ void MainWindow::recv(QByteArray n)
 
 
 // 打开串口按钮
-void MainWindow::btnOpen_clicked()
-{ 
+void MainWindow::on_btnOpen_clicked()
+{
     if(m_spcomm->isOpen())
     {
          qDebug() << "串口已经打开";
@@ -62,9 +50,7 @@ void MainWindow::btnOpen_clicked()
         qDebug() << "串口打开失败";
 }
 
-
-
-void MainWindow::btnClose_clicked()
+void MainWindow::on_btnClose_clicked()
 {
     if(m_spcomm->isOpen())
     {
@@ -73,19 +59,22 @@ void MainWindow::btnClose_clicked()
     }
     else
         qDebug()<<"串口已经关闭";
-
 }
 
-
-
-void MainWindow::btnSendData_clicked()
+// 串口发送函数
+void MainWindow::on_btnSend_clicked()
 {
-   unsigned char ch[] = {0xEF, 0x01,
-            0xFF, 0xFF, 0xFF, 0xFF,
-            0x01,
-            0x00, 0x03,
-            0x0f,
-            0x01, 0x03};
+   QString send =  ui->editSendData->text();     // 获取发送文本
+    const char *psend = send.toStdString().data();  // QString 转为 const char * 类型
+
+    if(m_spcomm->isOpen())             // 发送文本
+    {
+        m_spcomm->writeData((char *)psend, qstrlen(psend));
+        qDebug()<<psend;
+    }
+    else
+    {
+        qDebug()<<"串口未打开";
+    }
+
 }
-
-

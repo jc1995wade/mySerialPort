@@ -19,15 +19,13 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 private slots:
-    void btnOpen_clicked();
-
-    void btnClose_clicked();
-
-    void btnSendData_clicked();
-
     void recv(QByteArray);   // 接收串口信号 （槽函数实现）
 
-   // void on_testReceveData_destroyed();
+    void on_btnOpen_clicked();
+
+    void on_btnClose_clicked();
+
+    void on_btnSend_clicked();
 
 private:
     QPushButton     *btnOpen;

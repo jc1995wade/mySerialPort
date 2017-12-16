@@ -10,9 +10,67 @@ SPCcom::SPCcom(QObject *parent):QObject(parent)
     m_baudRate = 9600;
     m_portName = "com1";
 
-    // 信号发送函数
+    /*========*/
+    QString path = "HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\\";
+    QSettings *settings = new QSettings(path, QSettings::NativeFormat);
+    QStringList key = settings->allKeys();
+    int num = (int)key.size();
+    QString value;
+    for(int i = 0; i<num; i++)
+    {
+        value  = getcomm(i, "value");
+        qDebug()<<value;
+        m_listcomboName<<value;
+    }
+
 
 }
+
+
+// index 为索引号，keyorvalue 为选择返回值应该为key还value
+QString SPCcom::getcomm(int index, QString keyorvalue)
+{
+    QString commresult;
+
+   if(::RegOpenKeyEx(HKEY_LOCAL_MACHINE,TEXT("HARDWARE\\DEVICEMAP\\SERIALCOMM"),0,KEY_READ,&hKey)!=0)
+   {
+       QString error = "Cannot open regedit!";
+       return error;
+   }
+   QString keymessage;  // 键名
+   QString message;
+   QString valuemessage; // 键值
+   indexnum = index;   // 要读取键值的索引号
+   keysize=sizeof(keyname);
+   valuesize = sizeof(keyvalue);
+   if(::RegEnumValue(hKey,indexnum,keyname,&keysize,0,&type,(BYTE*)keyvalue,&valuesize)==0)//列举键名和值
+   {
+       for(int i=0; i<keysize; i++)
+       {
+           message=keyname[i];
+           keymessage.append(message);
+       }
+       for(int j=0; j<valuesize; j++)
+       {
+           if(keyvalue[j] != 0x00)
+           {
+               valuemessage.append(keyvalue[j]);
+           }
+       }
+       if(keyorvalue=="key")
+       {
+           commresult=keymessage;
+       }
+       else
+       {
+          // qDebug()<<"nokey";
+           commresult=valuemessage;
+       }
+       return commresult;
+       ::RegCloseKey(hKey);   // 关闭注册表
+   }
+}
+
 
 
 bool SPCcom::isOpen() const
