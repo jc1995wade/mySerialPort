@@ -10,8 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     m_spcomm = new SPCcom();
 
-
-     // 设置端口号
+     // 将获取到的端口号设置到端口选择界面
      ui->cb_COM->addItem(m_spcomm->m_listcomboName.join(","));
 
      // 绑定串口接收函数和文本显示函数

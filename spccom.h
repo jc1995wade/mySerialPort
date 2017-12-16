@@ -5,16 +5,18 @@
 #include "QtSerialPort/QSerialPort"  // 串口头文件
 #include <QSerialPortInfo>
 #include <signal.h>
+#include <qstringlist.h>
+#include <qt_windows.h>
+#include <QSettings>
+
 class SPCcom:public QObject
 {
     Q_OBJECT
 public:
-
     explicit SPCcom(QObject *parent = 0);
-  //  explicit SPCcom(void (MainWindow::*f)(const QString));
     ~SPCcom();
     QSerialPort *m_serialPort;
-
+   QStringList m_listcomboName;
     //声明串口功能
     bool isOpen() const;
 
@@ -33,10 +35,21 @@ public:
     int write(char ch);
 
     void connect_read();
+
+    // 读取键名
+    QString getcomm(int index, QString keyorvalue);
 protected:
     QString m_portName;
     int m_baudRate;
 
+private:
+
+    HKEY hKey;
+    LPCWSTR subkey;
+    wchar_t keyname[256];  // 键名数组
+    char keyvalue[256];   // 键值数组
+    DWORD keysize, type, valuesize;
+    int indexnum;
 
 signals:
     void send(QByteArray);

@@ -1,7 +1,6 @@
 #include "spccom.h"
 #include "qdebug.h"
 #include "mainwindow.h"
-QString msg;
 
 //构造函数 添加初始化数据
 SPCcom::SPCcom(QObject *parent):QObject(parent)
@@ -10,7 +9,7 @@ SPCcom::SPCcom(QObject *parent):QObject(parent)
     m_baudRate = 9600;
     m_portName = "com1";
 
-    /*========*/
+    /*====获取可用串口号====*/
     QString path = "HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\\";
     QSettings *settings = new QSettings(path, QSettings::NativeFormat);
     QStringList key = settings->allKeys();
