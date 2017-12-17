@@ -23,3 +23,8 @@ HEADERS  += mainwindow.h \
     common.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    switch.qrc
+
+DISTFILES +=

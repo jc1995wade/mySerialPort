@@ -8,6 +8,10 @@ SPCcom::SPCcom(QObject *parent):QObject(parent)
     m_serialPort = new QSerialPort();
     m_baudRate = 9600;
     m_portName = "com1";
+    m_parity = QSerialPort::NoParity;
+    m_dataBits = QSerialPort::Data8;
+    m_stopBits = QSerialPort::OneStop;
+    m_flowControl = QSerialPort::NoFlowControl;
 
     /*====获取可用串口号====*/
     QString path = "HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\\";
@@ -78,7 +82,7 @@ bool SPCcom::isOpen() const
 }
 
 
-// 设置波特率
+// 获取波特率
 static QSerialPort::BaudRate getBaudRate(int baudRate)
 {
     switch(baudRate)
@@ -103,6 +107,72 @@ static QSerialPort::BaudRate getBaudRate(int baudRate)
             return QSerialPort::UnknownBaud;
     }
 }
+// 获取数据位
+static QSerialPort::DataBits getDataBit(int data)
+{
+    switch(data)
+    {
+    case 5:
+        return QSerialPort::Data5;
+    case 6:
+        return QSerialPort::Data6;
+    case 7:
+        return QSerialPort::Data7;
+    case 8:
+        return QSerialPort::Data8;
+      default:
+        return QSerialPort::UnknownDataBits;
+    }
+}
+// 获取停止位
+static QSerialPort::StopBits getStopBits(int stopBits)
+{
+    switch(stopBits)
+    {
+    case 1:
+        return QSerialPort::OneStop;
+    case 3:
+        return QSerialPort::OneAndHalfStop;
+    case 2:
+        return QSerialPort::TwoStop;
+    default:
+        return QSerialPort::UnknownStopBits;
+    }
+}
+// 获取校验位
+static QSerialPort::Parity getParity(int parity)
+{
+    switch(parity)
+    {
+    case 0:
+        return QSerialPort::NoParity;
+    case 2:
+        return QSerialPort::EvenParity;
+    case 3:
+        return QSerialPort::OddParity;
+    case 4:
+        return QSerialPort::SpaceParity;
+    case 5:
+        return QSerialPort::MarkParity;
+    default:
+        return QSerialPort::UnknownParity;
+    }
+}
+
+static QSerialPort::FlowControl getFlowControl(int flow)
+{
+    switch(flow)
+    {
+    case 0:
+        return QSerialPort::NoFlowControl;
+    case 1:
+        return QSerialPort::HardwareControl;
+    case 2:
+        return QSerialPort::SoftwareControl;
+    default:
+        return QSerialPort::UnknownFlowControl;
+    }
+}
 
 // 设置串口名字
 // window 下用"com1"
@@ -111,17 +181,19 @@ void SPCcom::setPortName(const QString &name)
     m_portName = name;
 }
 
+// 设置波特率 9600
+void SPCcom::setBaudRate(int baudRate)
+{
+    m_baudRate = baudRate;
+}
+
+
 // 获取串口名字
 QString SPCcom::portName() const
 {
     return m_portName;
 }
 
-// 设置波特率 9600
-void SPCcom::setBaudRate(int baudRate)
-{
-    m_baudRate = baudRate;
-}
 
 // 打开串口，调用前，先设置串口名字和波特率
 bool SPCcom::open()
@@ -130,14 +202,14 @@ bool SPCcom::open()
     {
         return true;
     }
-    m_serialPort->setPortName(m_portName);
-    m_serialPort->setBaudRate(getBaudRate(m_baudRate));
-    m_serialPort->setParity(QSerialPort::NoParity);
-    m_serialPort->setDataBits(QSerialPort::Data8);
-    m_serialPort->setStopBits(QSerialPort::OneStop);
-    m_serialPort->setFlowControl(QSerialPort::NoFlowControl);
+    m_serialPort->setPortName(m_portName);    // com
+    m_serialPort->setBaudRate(getBaudRate(m_baudRate));  // 波特率
+    m_serialPort->setDataBits(getDataBit(m_dataBits));    // 数据位
+    m_serialPort->setStopBits(getStopBits(m_stopBits));   // 停止位
+    m_serialPort->setParity(getParity(m_parity));   //  校验位
+    m_serialPort->setFlowControl(getFlowControl(m_flowControl));  // 流控制
     m_serialPort->setReadBufferSize(1024);
-    bool read = m_serialPort->open(QSerialPort::ReadWrite);
+    bool read = m_serialPort->open(QSerialPort::ReadWrite);    // 读写方式
     // 绑定串口中断信号和中断处理函数
     connect(m_serialPort,  SIGNAL(readyRead()),  this,  SLOT(onReadyRead()));
     return  read;

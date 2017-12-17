@@ -17,6 +17,14 @@ public:
     ~SPCcom();
     QSerialPort *m_serialPort;
    QStringList m_listcomboName;
+   QString m_portName;
+   int m_baudRate;
+   int m_parity;
+   int m_dataBits;
+   int m_stopBits;
+   int m_flowControl;
+
+
     //声明串口功能
     bool isOpen() const;
 
@@ -39,8 +47,7 @@ public:
     // 读取键名
     QString getcomm(int index, QString keyorvalue);
 protected:
-    QString m_portName;
-    int m_baudRate;
+
 
 private:
 
