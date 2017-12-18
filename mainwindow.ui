@@ -48,6 +48,21 @@
        <height>21</height>
       </rect>
      </property>
+     <item>
+      <property name="text">
+       <string>com1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>com2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>com3</string>
+      </property>
+     </item>
     </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">

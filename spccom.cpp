@@ -17,12 +17,13 @@ SPCcom::SPCcom(QObject *parent):QObject(parent)
     QString path = "HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\\";
     QSettings *settings = new QSettings(path, QSettings::NativeFormat);
     QStringList key = settings->allKeys();
-    int num = (int)key.size();
+   // int num = (int)key.size();
     QString value;
-    for(int i = 0; i<num; i++)
+    qDebug()<<key.size();
+    for(int i = 0; i<key.size(); i++)
     {
         value  = getcomm(i, "value");
-        qDebug()<<value;
+        //qDebug()<<value;
         m_listcomboName<<value;
     }
 

@@ -31,10 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->photo_label->setText("串口关闭");
     ui->textRData->setReadOnly(true);  // 设置只读
 
-    ui->textRData->append("hello world");
-    ui->textRData->append("hello world");
-    ui->textRData->append("hello world");
-    ui->textRData->append("hello world");
+
  #if 0
 /* 16进制接收文本*/
     QString str1 = "h";
